@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.68"
+memmap = "0.7.0"
+rayon = "1.6.1"
+regex = "1.7.1"
