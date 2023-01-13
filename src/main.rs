@@ -1,9 +1,10 @@
 use crate::{arg::Opt, magic::Kind};
 use {
-    anyhow::{anyhow, Result},
+    anyhow::Result,
     clap::Parser,
+    indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle},
     log::{debug, info},
-    rayon::iter::{IntoParallelRefIterator, ParallelIterator},
+    rayon::iter::{IntoParallelIterator, ParallelIterator},
     std::{
         cmp::Reverse,
         collections::{HashMap, HashSet},
@@ -31,17 +32,23 @@ fn main() -> Result<()> {
     let len = f.metadata()?.len() as usize;
     let chunk_len = usize::max(1, len / NUM_CHUNKS);
 
-    let chunks = (0..len)
-        .step_by(chunk_len)
-        .map(|x| {
+    let chunks = (0..len).step_by(chunk_len).collect::<Vec<usize>>();
+
+    let progress_bar = ProgressBar::new(0);
+    progress_bar.set_style(ProgressStyle::default_bar()
+    .template(
+        "{spinner:.green} [{elapsed_precise:.green}] [{eta_precise:.cyan}] {msg:.magenta} ({percent:.bold}%) [{bar:30.cyan/blue}]",
+    )?
+    .progress_chars("█░"));
+    progress_bar.set_length(chunks.len() as u64);
+
+    let matches = chunks
+        .into_par_iter()
+        .progress_with(progress_bar)
+        .filter_map(|x| {
             let limit = usize::min(x + chunk_len + OVERLAP_SIZE, len);
             data.get(x..limit).map(|d| (x, d))
         })
-        .collect::<Option<Vec<(usize, &[u8])>>>()
-        .ok_or_else(|| anyhow!("Failed to read chunks"))?;
-
-    let matches = chunks
-        .par_iter()
         .map(|(i, ck)| {
             let mut h = HashMap::<Kind, HashSet<usize>>::new();
             for m in magic::magics().iter() {
