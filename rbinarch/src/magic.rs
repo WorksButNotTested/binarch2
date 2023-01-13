@@ -1,5 +1,7 @@
 use {regex::bytes::Regex, std::fmt};
 
+pub const MAX_MAGIC_LEN: usize = 16;
+
 #[derive(Eq, Hash, PartialEq, Clone, Debug)]
 pub enum Endian {
     Big = 0,

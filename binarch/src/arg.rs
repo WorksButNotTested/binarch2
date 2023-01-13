@@ -28,7 +28,7 @@ impl From<Level> for LevelFilter {
 
 #[derive(Parser, Debug)]
 #[command(
-    version = "1.0",
+    version = "1.1",
     about = "binarch2",
     long_about = "Tool for identifying architecture and endianness of binary files"
 )]
