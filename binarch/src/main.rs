@@ -1,10 +1,11 @@
-use crate::{arg::Opt, binarch::Binarch, magic::Kind};
+use crate::arg::Opt;
 use {
     anyhow::{anyhow, Result},
     clap::Parser,
     indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle},
     log::{debug, info},
     rayon::iter::{IntoParallelIterator, ParallelIterator},
+    rbinarch::{Binarch, Kind},
     std::{cmp::Reverse, fs::OpenOptions},
 };
 
@@ -12,8 +13,6 @@ const NUM_CHUNKS: usize = 4096;
 const OVERLAP_SIZE: usize = 16;
 
 mod arg;
-mod binarch;
-mod magic;
 
 fn main() -> Result<()> {
     let opt = Opt::parse();
@@ -27,7 +26,7 @@ fn main() -> Result<()> {
     let f = OpenOptions::new().read(true).open(opt.input)?;
     let data = unsafe { memmap::MmapOptions::new().map(&f)? };
     let len = f.metadata()?.len() as usize;
-    let chunk_len = usize::max(1, len / NUM_CHUNKS);
+    let chunk_len = usize::max(OVERLAP_SIZE, len / NUM_CHUNKS);
 
     let chunks = (0..len)
         .step_by(chunk_len)

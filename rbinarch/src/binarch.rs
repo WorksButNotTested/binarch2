@@ -5,15 +5,13 @@ type BinarchMatches = HashSet<usize>;
 type BinarchResults = HashMap<Kind, BinarchMatches>;
 
 #[derive(Default)]
-pub struct Binarch {
-    results: BinarchResults,
-}
+pub struct Binarch(BinarchResults);
 
 impl<'a> IntoIterator for &'a Binarch {
     type Item = (&'a Kind, &'a BinarchMatches);
     type IntoIter = Iter<'a, Kind, BinarchMatches>;
     fn into_iter(self) -> Iter<'a, Kind, BinarchMatches> {
-        self.results.iter()
+        self.0.iter()
     }
 }
 
@@ -27,24 +25,24 @@ impl Binarch {
         }
     }
 
-    pub fn new(i: usize, ck: &[u8]) -> Binarch {
+    pub fn new(offset: usize, chunk: &[u8]) -> Binarch {
         let mut results = HashMap::<Kind, BinarchMatches>::new();
-        for m in magics().iter() {
-            let indexes = m
+        for magic in magics().iter() {
+            let matches = magic
                 .regex()
-                .find_iter(ck)
-                .filter(|c| m.matches(&ck[c.start()..c.end()]))
-                .map(|c| i + c.start())
+                .find_iter(chunk)
+                .filter(|rmatch| magic.matches(&chunk[rmatch.start()..rmatch.end()]))
+                .map(|rmatch| offset + rmatch.start())
                 .collect::<BinarchMatches>();
-            Self::merge(&mut results, &m.kind(), &indexes);
+            Self::merge(&mut results, &magic.kind(), &matches);
         }
-        Binarch { results }
+        Binarch(results)
     }
 
     pub fn reduce(a: Binarch, b: Binarch) -> Binarch {
         let mut result = a;
-        for (kb, vb) in b.results {
-            Self::merge(&mut result.results, &kb, &vb);
+        for (kb, vb) in b.0 {
+            Self::merge(&mut result.0, &kb, &vb);
         }
         result
     }

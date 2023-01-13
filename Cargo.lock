@@ -24,7 +24,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-name = "binarch2"
+name = "binarch"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -34,7 +34,7 @@ dependencies = [
  "log",
  "memmap",
  "rayon",
- "regex",
+ "rbinarch",
 ]
 
 [[package]]
@@ -398,6 +398,13 @@ dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
  "num_cpus",
+]
+
+[[package]]
+name = "rbinarch"
+version = "0.1.0"
+dependencies = [
+ "regex",
 ]
 
 [[package]]

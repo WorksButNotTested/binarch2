@@ -55,7 +55,7 @@ pub fn magics() -> Vec<Box<dyn Magic>> {
     ]
 }
 
-pub struct MipsBigEndianAdduiPrologue;
+struct MipsBigEndianAdduiPrologue;
 
 /// addui $sp, -XX
 /// sw XX, XX($sp)
@@ -84,7 +84,7 @@ impl Magic for MipsBigEndianAdduiPrologue {
     }
 }
 
-pub struct MipsLittleEndianAdduiPrologue;
+struct MipsLittleEndianAdduiPrologue;
 
 /// addui $sp, -XX
 /// sw XX, XX($sp)
@@ -113,7 +113,7 @@ impl Magic for MipsLittleEndianAdduiPrologue {
     }
 }
 
-pub struct MipsBigEndianJrAddui;
+struct MipsBigEndianJrAddui;
 
 /// jr $ra
 /// addui $sp, XX
@@ -132,7 +132,7 @@ impl Magic for MipsBigEndianJrAddui {
     }
 }
 
-pub struct MipsLittleEndianJrAddui;
+struct MipsLittleEndianJrAddui;
 
 /// jr $ra
 /// addui $sp, XX
@@ -151,7 +151,7 @@ impl Magic for MipsLittleEndianJrAddui {
     }
 }
 
-pub struct MipsBigEndianAdduiJr;
+struct MipsBigEndianAdduiJr;
 
 /// addui $sp, XX
 /// jr $ra
@@ -170,7 +170,7 @@ impl Magic for MipsBigEndianAdduiJr {
     }
 }
 
-pub struct MipsLittleEndianAdduiJr;
+struct MipsLittleEndianAdduiJr;
 
 /// addui $sp, XX
 /// jr $ra
@@ -189,7 +189,7 @@ impl Magic for MipsLittleEndianAdduiJr {
     }
 }
 
-pub struct PowerPcBigEndianMflrPrologue;
+struct PowerPcBigEndianMflrPrologue;
 
 /// mflr r0
 impl Magic for PowerPcBigEndianMflrPrologue {
@@ -207,7 +207,7 @@ impl Magic for PowerPcBigEndianMflrPrologue {
     }
 }
 
-pub struct PowerPcLittleEndianMflrPrologue;
+struct PowerPcLittleEndianMflrPrologue;
 
 /// mflr r0
 impl Magic for PowerPcLittleEndianMflrPrologue {
@@ -225,7 +225,7 @@ impl Magic for PowerPcLittleEndianMflrPrologue {
     }
 }
 
-pub struct PowerPcBigEndianBlrEpilogue;
+struct PowerPcBigEndianBlrEpilogue;
 
 /// blr
 impl Magic for PowerPcBigEndianBlrEpilogue {
@@ -243,7 +243,7 @@ impl Magic for PowerPcBigEndianBlrEpilogue {
     }
 }
 
-pub struct PowerPcLittleEndianBlrEpilogue;
+struct PowerPcLittleEndianBlrEpilogue;
 
 /// blr
 impl Magic for PowerPcLittleEndianBlrEpilogue {
@@ -261,7 +261,7 @@ impl Magic for PowerPcLittleEndianBlrEpilogue {
     }
 }
 
-pub struct ArmBigEndianStmfdPrologue;
+struct ArmBigEndianStmfdPrologue;
 
 /// stmfd sp!, {xx}
 /// any instruction with op-code beginning with 0xe
@@ -287,7 +287,7 @@ impl Magic for ArmBigEndianStmfdPrologue {
     }
 }
 
-pub struct ArmLittleEndianStmfdPrologue;
+struct ArmLittleEndianStmfdPrologue;
 
 /// stmfd sp!, {xx}
 /// any instruction with op-code beginning with 0xe
@@ -313,7 +313,7 @@ impl Magic for ArmLittleEndianStmfdPrologue {
     }
 }
 
-pub struct ArmBigEndianLdmfdEpilogue;
+struct ArmBigEndianLdmfdEpilogue;
 
 /// mov r0, xx
 /// ldmfd sp!, {xx}
@@ -332,7 +332,7 @@ impl Magic for ArmBigEndianLdmfdEpilogue {
     }
 }
 
-pub struct ArmLittleEndianLdmfdEpilogue;
+struct ArmLittleEndianLdmfdEpilogue;
 
 /// mov r0, xx
 /// ldmfd sp!, {xx}
@@ -351,7 +351,7 @@ impl Magic for ArmLittleEndianLdmfdEpilogue {
     }
 }
 
-pub struct X86LittleEndianPushEbpMovPrologue;
+struct X86LittleEndianPushEbpMovPrologue;
 
 /// push ebp
 /// mov  ebp, esp
@@ -371,7 +371,7 @@ impl Magic for X86LittleEndianPushEbpMovPrologue {
     }
 }
 
-pub struct X86LittleEndianPushEbpMovPrologue2;
+struct X86LittleEndianPushEbpMovPrologue2;
 
 /// push rbp
 /// mov  ebp, esp
@@ -392,7 +392,7 @@ impl Magic for X86LittleEndianPushEbpMovPrologue2 {
     }
 }
 
-pub struct X86LittleEndianNopSlide;
+struct X86LittleEndianNopSlide;
 
 /// nop
 /// nop
@@ -417,7 +417,7 @@ impl Magic for X86LittleEndianNopSlide {
     }
 }
 
-pub struct X86LittleEndianEndBr64;
+struct X86LittleEndianEndBr64;
 
 /// endbr64
 impl Magic for X86LittleEndianEndBr64 {
