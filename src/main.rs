@@ -1,20 +1,18 @@
-use crate::{arg::Opt, magic::Kind};
+use crate::{arg::Opt, binarch::Binarch, magic::Kind};
 use {
     anyhow::{anyhow, Result},
     clap::Parser,
+    indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle},
     log::{debug, info},
-    rayon::iter::{IntoParallelRefIterator, ParallelIterator},
-    std::{
-        cmp::Reverse,
-        collections::{HashMap, HashSet},
-        fs::OpenOptions,
-    },
+    rayon::iter::{IntoParallelIterator, ParallelIterator},
+    std::{cmp::Reverse, fs::OpenOptions},
 };
 
 const NUM_CHUNKS: usize = 4096;
 const OVERLAP_SIZE: usize = 16;
 
 mod arg;
+mod binarch;
 mod magic;
 
 fn main() -> Result<()> {
@@ -40,39 +38,21 @@ fn main() -> Result<()> {
         .collect::<Option<Vec<(usize, &[u8])>>>()
         .ok_or_else(|| anyhow!("Failed to read chunks"))?;
 
-    let matches = chunks
-        .par_iter()
-        .map(|(i, ck)| {
-            let mut h = HashMap::<Kind, HashSet<usize>>::new();
-            for m in magic::magics().iter() {
-                let indexes = m
-                    .regex()
-                    .find_iter(ck)
-                    .filter(|c| m.matches(&ck[c.start()..c.end()]))
-                    .map(|c| i + c.start())
-                    .collect::<HashSet<usize>>();
-                match h.get_mut(&m.kind()) {
-                    Some(hs) => hs.extend(indexes),
-                    None => {
-                        h.insert(m.kind(), indexes);
-                    }
-                }
-            }
-            h
-        })
-        .reduce(HashMap::<Kind, HashSet<usize>>::new, |mut a, b| {
-            for (bk, bv) in b {
-                match a.get_mut(&bk) {
-                    Some(av) => av.extend(bv.iter()),
-                    None => {
-                        a.insert(bk, bv);
-                    }
-                }
-            }
-            a
-        });
+    let progress_bar = ProgressBar::new(0);
+    progress_bar.set_style(ProgressStyle::default_bar()
+    .template(
+        "{spinner:.green} [{elapsed_precise:.green}] [{eta_precise:.cyan}] {msg:.magenta} ({percent:.bold}%) [{bar:30.cyan/blue}]",
+    )?
+    .progress_chars("█░"));
+    progress_bar.set_length(chunks.len() as u64);
 
-    let mut list = matches
+    let matches = chunks
+        .into_par_iter()
+        .progress_with(progress_bar)
+        .map(|(i, ck)| Binarch::process(i, ck));
+    let results = matches.reduce(Binarch::default, Binarch::reduce);
+
+    let mut list = results
         .iter()
         .map(|(k, v)| (k, v.len()))
         .collect::<Vec<(&Kind, usize)>>();
@@ -83,7 +63,7 @@ fn main() -> Result<()> {
         debug!("\t{:#?}: {}", k, v);
     }
 
-    match matches.iter().max_by_key(|(_, v)| v.len()) {
+    match results.iter().max_by_key(|(_, v)| v.len()) {
         Some((k, _)) => info!("{:#?}", k),
         None => {
             info!("Unknown")

@@ -1,12 +1,12 @@
 use {regex::bytes::Regex, std::fmt};
 
-#[derive(Eq, Hash, PartialEq, Debug)]
+#[derive(Eq, Hash, PartialEq, Clone, Debug)]
 pub enum Endian {
     Big = 0,
     Little = 1,
 }
 
-#[derive(Eq, Hash, PartialEq, Debug)]
+#[derive(Eq, Hash, PartialEq, Clone, Debug)]
 pub enum Arch {
     PowerPc = 0,
     Mips = 1,
@@ -14,7 +14,7 @@ pub enum Arch {
     X86 = 3,
 }
 
-#[derive(Eq, Hash, PartialEq)]
+#[derive(Eq, Hash, PartialEq, Clone)]
 pub struct Kind {
     endian: Endian,
     arch: Arch,
