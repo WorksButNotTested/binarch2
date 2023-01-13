@@ -49,11 +49,11 @@ fn main() -> Result<()> {
     let matches = chunks
         .into_par_iter()
         .progress_with(progress_bar)
-        .map(|(i, ck)| Binarch::process(i, ck));
+        .map(|(i, ck)| Binarch::new(i, ck));
     let results = matches.reduce(Binarch::default, Binarch::reduce);
 
     let mut list = results
-        .iter()
+        .into_iter()
         .map(|(k, v)| (k, v.len()))
         .collect::<Vec<(&Kind, usize)>>();
     list.sort_by_key(|(_, v)| Reverse(*v));
@@ -63,7 +63,7 @@ fn main() -> Result<()> {
         debug!("\t{:#?}: {}", k, v);
     }
 
-    match results.iter().max_by_key(|(_, v)| v.len()) {
+    match results.into_iter().max_by_key(|(_, v)| v.len()) {
         Some((k, _)) => info!("{:#?}", k),
         None => {
             info!("Unknown")
