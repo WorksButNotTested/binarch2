@@ -1,10 +1,12 @@
-use crate::magic::Kind;
+use crate::{arg::Opt, magic::Kind};
 use {
     anyhow::{anyhow, Result},
+    clap::Parser,
+    log::{debug, info},
     rayon::iter::{IntoParallelRefIterator, ParallelIterator},
     std::{
+        cmp::Reverse,
         collections::{HashMap, HashSet},
-        env,
         fs::OpenOptions,
     },
 };
@@ -12,15 +14,19 @@ use {
 const NUM_CHUNKS: usize = 4096;
 const OVERLAP_SIZE: usize = 16;
 
+mod arg;
 mod magic;
 
 fn main() -> Result<()> {
-    let args: Vec<String> = env::args().collect();
-    let input = args
-        .get(1)
-        .ok_or_else(|| anyhow!("No input file provided"))?;
+    let opt = Opt::parse();
 
-    let f = OpenOptions::new().read(true).open(input)?;
+    env_logger::builder()
+        .filter_level(opt.log_level.into())
+        .format_timestamp(None)
+        .format_target(false)
+        .init();
+
+    let f = OpenOptions::new().read(true).open(opt.input)?;
     let data = unsafe { memmap::MmapOptions::new().map(&f)? };
     let len = f.metadata()?.len() as usize;
     let chunk_len = usize::max(1, len / NUM_CHUNKS);
@@ -66,10 +72,24 @@ fn main() -> Result<()> {
             a
         });
 
-    for (k, v) in matches {
-        println!("{:#?}: {}", k, v.len());
+    let mut list = matches
+        .iter()
+        .map(|(k, v)| (k, v.len()))
+        .collect::<Vec<(&Kind, usize)>>();
+    list.sort_by_key(|(_, v)| Reverse(*v));
+
+    debug!("Results:");
+    for (k, v) in list {
+        debug!("\t{:#?}: {}", k, v);
     }
 
-    println!("DONE");
+    match matches.iter().max_by_key(|(_, v)| v.len()) {
+        Some((k, _)) => info!("{:#?}", k),
+        None => {
+            info!("Unknown")
+        }
+    }
+
+    info!("DONE");
     Ok(())
 }
