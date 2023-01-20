@@ -2,13 +2,14 @@ use {regex::bytes::Regex, std::fmt};
 
 pub const MAX_MAGIC_LEN: usize = 16;
 
-#[derive(Eq, Hash, PartialEq, Clone, Debug)]
+#[derive(Eq, Hash, PartialEq, Clone, Debug, Copy, Default)]
 pub enum Endian {
+    #[default]
     Big = 0,
     Little = 1,
 }
 
-#[derive(Eq, Hash, PartialEq, Clone, Debug)]
+#[derive(Eq, Hash, PartialEq, Clone, Debug, Copy)]
 pub enum Arch {
     PowerPc = 0,
     Mips = 1,
@@ -18,8 +19,8 @@ pub enum Arch {
 
 #[derive(Eq, Hash, PartialEq, Clone)]
 pub struct Kind {
-    endian: Endian,
-    arch: Arch,
+    pub endian: Endian,
+    pub arch: Arch,
 }
 
 impl fmt::Debug for Kind {
