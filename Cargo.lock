@@ -25,7 +25,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "binarch"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "anyhow",
  "clap",
@@ -34,7 +34,7 @@ dependencies = [
  "log",
  "memmap",
  "rayon",
- "rbinarch",
+ "regex",
 ]
 
 [[package]]
@@ -398,16 +398,6 @@ dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
  "num_cpus",
-]
-
-[[package]]
-name = "rbinarch"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "indicatif",
- "rayon",
- "regex",
 ]
 
 [[package]]

@@ -1,4 +1,3 @@
-#[cfg(feature = "parallel")]
 use {
     crate::magic::MAX_MAGIC_LEN,
     anyhow::{anyhow, Result},
@@ -36,7 +35,6 @@ impl Binarch {
         }
     }
 
-    #[cfg(feature = "parallel")]
     pub fn new_parallel(
         data: &[u8],
         num_chunks: usize,

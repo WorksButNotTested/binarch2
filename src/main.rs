@@ -1,16 +1,17 @@
 use {
-    crate::arg::Opt,
+    crate::{arg::Opt, binarch::Binarch},
     anyhow::Result,
     clap::Parser,
     indicatif::{ProgressBar, ProgressStyle},
     log::{debug, info},
-    rbinarch::Binarch,
     std::fs::OpenOptions,
 };
 
 const NUM_CHUNKS: usize = 4096;
 
 mod arg;
+mod binarch;
+mod magic;
 
 fn main() -> Result<()> {
     let opt = Opt::parse();

@@ -1,8 +1,24 @@
-[workspace]
-members = [
-  "binarch",
-  "rbinarch"
-]
+[package]
+name = "binarch"
+version = "1.0.1"
+edition = "2021"
+repository = "https://github.com/WorksButNotTested/binarch2-private.git"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.68"
+clap = { version = "4.0.32", features = ["derive"] }
+env_logger = "0.10.0"
+indicatif = {version = "0.17.2", features = ["rayon"] }
+log = "0.4.17"
+memmap = "0.7.0"
+rayon = "1.6.1"
+regex = "1.7.1"
+
+# The profile that 'cargo dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
 
 # Config for 'cargo dist'
 [workspace.metadata.dist]
@@ -18,9 +34,3 @@ targets = ["x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"]
 install-path = "CARGO_HOME"
 # Whether to install an updater program
 install-updater = false
-
-# The profile that 'cargo dist' will build with
-[profile.dist]
-inherits = "release"
-lto = "thin"
-
